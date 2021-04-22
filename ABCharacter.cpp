@@ -6,7 +6,7 @@
 #include "ABCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
-//#include "ABCharacterWidget.h"
+#include "ABCharacterWidget.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -299,11 +299,11 @@ void AABCharacter::PostInitializeComponents()
 		SetActorEnableCollision(false);
 	});
 
-	/*auto CharacterWidget = Cast<UABCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+	auto CharacterWidget = Cast<UABCharacterWidget>(HPBarWidget->GetUserWidgetObject());
 	if (nullptr != CharacterWidget)
 	{
 		CharacterWidget->BindCharacterStat(CharacterStat);
-	}*/
+	}
 }
 
 void AABCharacter::Attack()
