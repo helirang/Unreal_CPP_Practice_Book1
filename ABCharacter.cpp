@@ -7,6 +7,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/WidgetComponent.h"
 #include "ABCharacterWidget.h"
+#include "ABAIController.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -82,6 +83,10 @@ AABCharacter::AABCharacter()
 	//디버그 드로잉
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
+
+	//AIAdd
+	AIControllerClass = AABAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 // Called when the game starts or when spawned
