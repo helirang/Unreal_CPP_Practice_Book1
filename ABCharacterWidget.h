@@ -13,10 +13,17 @@ UCLASS()
 class ARENABATTLE_API UABCharacterWidget : public UUserWidget
 {
 	GENERATED_BODY()
-//	
-//public:
-//	void BindCharacterStat(class UABCharacterStatComponent* NewCharacterStat);
-//
-//private:
 
+public:
+	void BindCharacterStat(class UABCharacterStatComponent* NewCharacterStat);
+
+protected:
+	virtual void NativeConstruct() override;
+	void UpdateHPWidget();
+
+private:
+	TWeakObjectPtr<class UABCharacterStatComponent> CurrentCharacterStat;
+
+	UPROPERTY()
+	class UProgressBar* HPProgressBar;
 };
