@@ -23,6 +23,12 @@ AABSection::AABSection()
 		ABLOG(Error, TEXT("Failed to load staticmesh asset : %s"), *AssetPath);
 	}
 
+	Trigger = CreateAbstractDefaultSubobject<UBoxComponent>(TEXT("TRIGGER"));
+	Trigger->SetBoxExtent(FVector(775.0f, 775.0f, 300.0f));
+	Trigger->SetupAttachment(RootComponent);
+	Trigger->SetRelativeLocation(FVector(0.0f, 0.0f, 250.0f));
+	Trigger->SetCollisionProfileName(TEXT("ABTrigger"));
+
 	FString GateAssetPath = TEXT("/Game/Book/StaticMesh/SM_GATE.SM_GATE");
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_GATE(*GateAssetPath);
 	if (!SM_GATE.Succeeded())
@@ -39,6 +45,13 @@ AABSection::AABSection()
 		NewGate->SetupAttachment(RootComponent, GateSocket);
 		NewGate->SetRelativeLocation(FVector(0.0f, -80.5f, 0.0f));
 		GateMeshes.Add(NewGate);
+
+		UBoxComponent* NewGateTrigger = CreateAbstractDefaultSubobject<UBoxComponent>(*GateSocket.ToString().Append(TEXT("Trigger")));
+		NewGateTrigger->SetBoxExtent(FVector(100.0f, 100.0f, 300.0f));
+		NewGateTrigger->SetupAttachment(RootComponent, GateSocket);
+		NewGateTrigger->SetRelativeLocation(FVector(70.0f, 0.0f, 250.0f));
+		NewGateTrigger->SetCollisionProfileName(TEXT("ABTrigger"));
+		GateTriggers.Add(NewGateTrigger);
 	}
 
 }
