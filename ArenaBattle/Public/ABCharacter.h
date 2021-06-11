@@ -16,6 +16,19 @@ class ARENABATTLE_API AABCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AABCharacter();
+	void SetCharacterState(ECharacterState);
+	ECharacterState GetCharacterState() const;
+
+public:
+	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const&DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void PossessedBy(AController* NewController) override;
+
+	bool CanSetWeapon();
+	void SetWeapon(class AABWeapon* NewWeapon);
+	void Attack();
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,23 +51,22 @@ protected:
 	FRotator ArmRotationTo = FRotator::ZeroRotator;
 	float ArmLengthSpeed = 0.0f;
 	float ArmRotationSpeed = 0.0f;
+
+private:
+	void AttackStartComboState();
+	void AttackEndComboState();
+	void AttackCheck();
+	void LeftRight(float NewAxisValue);
+	void LookUp(float NewAxisValue);
+	void OnAssetLoadCompleted();
+	void Turn(float NewAxisValue);
+	void UpDown(float NewAxisValue);
+	void ViewChange();
+
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 	
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	virtual void PostInitializeComponents() override;
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	//
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const&DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void PossessedBy(AController* NewController) override;
-
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	USpringArmComponent* SpringArm;
-
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	UCameraComponent* Camera;
-
+public:
 	UPROPERTY(VisibleAnywhere, Category = UI)
 	class UWidgetComponent* HPBarWidget;
 
@@ -62,14 +74,17 @@ public:
 	class UABCharacterStatComponent* CharacterStat;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	USkeletalMeshComponent* Weapon;
-
-	bool CanSetWeapon();
-	void SetWeapon(class AABWeapon* NewWeapon);
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	class AABWeapon* CurrentWeapon;
 
-	void Attack();
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	USkeletalMeshComponent* Weapon;
+
 	FOnAttackEndDelegate OnAttackEnd;
 
 private:
@@ -82,12 +97,6 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsComboInputOn;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentCombo;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 MaxCombo;
-
 	UPROPERTY()
 	class UABAnimInstance* ABAnim;
 
@@ -97,24 +106,32 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	float AttackRadius;
 
-	void OnAssetLoadCompleted();
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentCombo;
 
-private:
-	void UpDown(float NewAxisValue);
-	void LeftRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 MaxCombo;
 
-	void ViewChange();
+	int32 AssetIndex = 0;
+
 	//void Attack(); public으로 이동
-
-	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
-	void AttackStartComboState();
-	void AttackEndComboState();
-	void AttackCheck();
-
 	FSoftObjectPath CharacterAssetToLoad = FSoftObjectPath(nullptr);
 	TSharedPtr<struct FStreamableHandle> AssetStreamingHandle;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	ECharacterState CurrentState;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	bool bIsPlayer;
+
+	UPROPERTY()
+	class AABAIController* ABAIController;
+
+	UPROPERTY()
+	class AABPlayerController* ABPlayerController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, Meta = (AllowPrivateAccess = true))
+	float DeadTimer;
+
+	FTimerHandle DeadTimerHandle = {};
 };
