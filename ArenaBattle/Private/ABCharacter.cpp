@@ -11,6 +11,8 @@
 #include "ABCharacterSetting.h"
 #include "ABGameInstance.h"
 #include "ABPlayerController.h"
+#include "ABPlayerState.h"
+#include "ABHUDWidget.h"
 
 // Sets default values
 AABCharacter::AABCharacter()
@@ -102,14 +104,13 @@ void AABCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-<<<<<<< Updated upstream
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	auto CurWeapon = GetWorld()->SpawnActor<AABWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 		if (nullptr != CurWeapon)
 		{
 			CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 		}
-=======
+
 	bIsPlayer = IsPlayerControlled();
 	if (bIsPlayer)
 	{
@@ -139,7 +140,6 @@ void AABCharacter::BeginPlay()
 	AssetStreamingHandle = ABGameInstance->StreamableManager.
 		RequestAsyncLoad(CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AABCharacter::OnAssetLoadCompleted));
 	SetCharacterState(ECharacterState::LOADING);
->>>>>>> Stashed changes
 }
 
 // Called to bind functionality to input
@@ -504,8 +504,6 @@ void AABCharacter::SetWeapon(AABWeapon * NewWeapon)
 		CurrentWeapon = NewWeapon;
 		/*ABLOG(Warning, TEXT("NewWeapon %s"), *NewWeapon->GetName());*/
 	}
-<<<<<<< Updated upstream
-=======
 }
 
 void AABCharacter::OnAssetLoadCompleted()
@@ -530,6 +528,12 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		if (bIsPlayer)
 		{
 			DisableInput(ABPlayerController);
+
+			ABPlayerController->GetHUDWidget()->BindCharacterStat(CharacterStat);
+
+			auto ABPlayerState = Cast<AABPlayerState>(PlayerState);
+			ABCHECK(nullptr != ABPlayerState);
+			CharacterStat->SetNewLevel(ABPlayerState->GetCharacterLevel());
 		}
 
 		SetActorHiddenInGame(true);
@@ -603,5 +607,4 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 ECharacterState AABCharacter::GetCharacterState() const
 {
 	return CurrentState;
->>>>>>> Stashed changes
 }
