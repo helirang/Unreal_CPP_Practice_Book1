@@ -414,15 +414,19 @@ void AABCharacter::OnAttackMontageEnded(UAnimMontage * Montage, bool bInterrupte
 float AABCharacter::TakeDamage(float DamageAmount, FDamageEvent const &DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
 	float FinalDmage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDmage);
-
-	/*if (FinalDmage > 0.0f)
-	{
-		ABAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
-	}*/
+	/*ABLOG(Warning, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDmage);*/
 
 	CharacterStat->SetDamage(FinalDmage);
+	if (CurrentState == ECharacterState::DEAD)
+	{
+		if (EventInstigator->IsPlayerController())
+		{
+			auto ABPlayerController = Cast<AABPlayerController>(EventInstigator);
+			ABCHECK(nullptr != ABPlayerController, 0.0f);
+			ABPlayerController->NPCKill(this);
+		}
+	}
+
 	return FinalDmage;
 }
 
@@ -602,6 +606,11 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		break;
 	}
 	}
+}
+
+int32 AABCharacter::GetExp() const
+{
+	return CharacterStat->GetDropExp();
 }
 
 ECharacterState AABCharacter::GetCharacterState() const

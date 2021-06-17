@@ -18,6 +18,7 @@ public:
 	AABCharacter();
 	void SetCharacterState(ECharacterState);
 	ECharacterState GetCharacterState() const;
+	int32 GetExp()const;
 
 public:
 	virtual void Tick(float DeltaTime) override;
