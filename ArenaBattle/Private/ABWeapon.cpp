@@ -12,19 +12,35 @@ AABWeapon::AABWeapon()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
 	RootComponent = Weapon;
 
-	/*static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT(""));
-	if(SK_WEAPON.Succeeded())
-	{
-		Weapon->SetSkeletalMesh(SK_WEAPON.Object);
-	}*/
-
 	Weapon->SetCollisionProfileName(TEXT("NoCollision"));
+	AttackRange = 150.0f;
+	AttackDamageMin = -2.5f;
+	AttackDamageMax = 10.0f;
+	AttackModifierMin = 0.85f;
+	AttackMidifierMax = 1.25f;
 }
 
 // Called when the game starts or when spawned
 void AABWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AttackDamage = FMath::RandRange(AttackDamageMin, AttackDamageMax);
+	AttackModifier = FMath::RandRange(AttackModifierMin, AttackMidifierMax);
+	ABLOG(Warning, TEXT("Weapon Damage : %f, Modifier : %f"), AttackDamage, AttackModifier);
 }
 
+float AABWeapon::GetAttackRange() const
+{
+	return AttackRange;
+}
 
+float AABWeapon::GetAttackDamage() const
+{
+	return AttackDamage;
+}
+
+float AABWeapon::GetAttackModifier() const
+{
+	return AttackModifier;
+}

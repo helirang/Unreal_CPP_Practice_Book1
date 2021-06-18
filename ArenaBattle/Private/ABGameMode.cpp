@@ -20,7 +20,7 @@ void AABGameMode::PostLogin(APlayerController * NewPlayer)
 
 	auto ABPlayerState = Cast<AABPlayerState>(NewPlayer->PlayerState);
 	ABCHECK(nullptr != ABPlayerState);
-	ABPlayerState->InitPlayerDate();
+	ABPlayerState->InitPlayerData();
 }
 
 void AABGameMode::PostInitializeComponents()
@@ -42,4 +42,9 @@ void AABGameMode::AddScore(AABPlayerController* ScoredPlayer)
 	}
 
 	ABGameState->AddGameScore();
+}
+
+int32 AABGameMode::GetScore() const
+{
+	return ABGameState->GetTotalGameScore();
 }
