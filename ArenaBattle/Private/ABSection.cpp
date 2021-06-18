@@ -4,6 +4,7 @@
 #include "ABCharacter.h"
 #include "ABItemBox.h"
 #include "ABPlayerController.h"
+#include "ABGameMode.h"
 
 
 // Sets default values
@@ -200,6 +201,10 @@ void AABSection::OnKeyNPCDestroyed(AActor* DestroyedActor)
 
 	auto ABPlayerController = Cast<AABPlayerController>(ABCharacter->LastHitBy);
 	ABCHECK(nullptr != ABPlayerController);
+
+	auto ABGameMode = Cast<AABGameMode>(GetWorld()->GetAuthGameMode());
+	ABCHECK(nullptr != ABGameMode);
+	ABGameMode->AddScore(ABPlayerController);
 
 	SetState(ESetctionState::COMPLETE);
 }
