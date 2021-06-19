@@ -19,14 +19,17 @@ public:
 
 public:
 	UPROPERTY()
-	int32 Level;
+	int32 CharacterIndex;
 
 	UPROPERTY()
 	int32 Exp;
 
 	UPROPERTY()
-	FString PlayerName;
+	int32 Level;
 
 	UPROPERTY()
 	int32 HighScore;
+
+	UPROPERTY()
+	FString PlayerName;
 };

@@ -4,6 +4,7 @@
 #include "ABHUDWidget.h"
 #include "ABPlayerState.h"
 #include "ABCharacter.h"
+#include "ABGameplayWidget.h"
 
 AABPlayerController::AABPlayerController()
 {
@@ -11,6 +12,12 @@ AABPlayerController::AABPlayerController()
 	if (UI_HUD_C.Succeeded())
 	{
 		HUDWidgetClass = UI_HUD_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UABGameplayWidget> UI_MENU_C(TEXT("WidgetBlueprint'/Game/Book/UI/UI_Menu.UI_Menu_C"));
+	if (UI_MENU_C.Succeeded())
+	{
+		MenuWidgetClass = UI_MENU_C.Class;
 	}
 }
 
@@ -55,6 +62,17 @@ void AABPlayerController::AddGameScore() const
 void AABPlayerController::NPCKill(AABCharacter* KilledNpc) const
 {
 	ABPlayerState->AddExp(KilledNpc->GetExp());
+}
+
+void AABPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &AABPlayerController::OnGamePause);
+}
+
+void AABPlayerController::OnGamePause()
+{
+
 }
 
 

@@ -8,5 +8,6 @@ UABSaveGame::UABSaveGame()
 	Exp = 0;
 	PlayerName = TEXT("Guest");
 	HighScore = 0;
+	CharacterIndex = 0;
 }
 
