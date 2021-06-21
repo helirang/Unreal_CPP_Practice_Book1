@@ -14,7 +14,7 @@ AABPlayerController::AABPlayerController()
 		HUDWidgetClass = UI_HUD_C.Class;
 	}
 
-	static ConstructorHelpers::FClassFinder<UABGameplayWidget> UI_MENU_C(TEXT("WidgetBlueprint'/Game/Book/UI/UI_Menu.UI_Menu_C"));
+	static ConstructorHelpers::FClassFinder<UABGameplayWidget> UI_MENU_C(TEXT("/Game/Book/UI/UI_Menu.UI_Menu_c"));
 	if (UI_MENU_C.Succeeded())
 	{
 		MenuWidgetClass = UI_MENU_C.Class;
@@ -37,16 +37,31 @@ void AABPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	FInputModeGameOnly InputMode; //게임 테스트 편의를 위한 ui배제 p.158
-	SetInputMode(InputMode);
+
+	ChangeInputMode(true);
 
 	HUDWidget = CreateWidget<UABHUDWidget>(this, HUDWidgetClass);
-	HUDWidget->AddToViewport();
+	ABCHECK(nullptr != HUDWidget);
+	HUDWidget->AddToViewport(1);
 
 	ABPlayerState = Cast<AABPlayerState>(PlayerState);
 	ABCHECK(nullptr != ABPlayerState);
 	HUDWidget->BindPlayerState(ABPlayerState);
 	ABPlayerState->OnPlayerStateChanged.Broadcast();
+}
+
+void AABPlayerController::ChangeInputMode(bool bGameMode)
+{
+	if (bGameMode)
+	{
+		SetInputMode(GameInputMode);
+		bShowMouseCursor = false;
+	}
+	else
+	{
+		SetInputMode(UIInputMode);
+		bShowMouseCursor = true;
+	}
 }
 
 UABHUDWidget* AABPlayerController::GetHUDWidget() const
@@ -72,7 +87,12 @@ void AABPlayerController::SetupInputComponent()
 
 void AABPlayerController::OnGamePause()
 {
+	MenuWidget = CreateWidget<UABGameplayWidget>(this, MenuWidgetClass);
+	ABCHECK(nullptr != MenuWidget);
+	MenuWidget->AddToViewport(3);
 
+	SetPause(true);
+	ChangeInputMode(false);
 }
 
 
