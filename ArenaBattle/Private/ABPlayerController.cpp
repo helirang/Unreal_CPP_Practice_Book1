@@ -5,6 +5,7 @@
 #include "ABPlayerState.h"
 #include "ABCharacter.h"
 #include "ABGameplayWidget.h"
+#include "ABGameplayResultWidget.h"
 
 AABPlayerController::AABPlayerController()
 {
@@ -14,10 +15,16 @@ AABPlayerController::AABPlayerController()
 		HUDWidgetClass = UI_HUD_C.Class;
 	}
 
-	static ConstructorHelpers::FClassFinder<UABGameplayWidget> UI_MENU_C(TEXT("/Game/Book/UI/UI_Menu.UI_Menu_c"));
+	static ConstructorHelpers::FClassFinder<UABGameplayWidget> UI_MENU_C(TEXT("/Game/Book/UI/UI_Menu.UI_Menu_C"));
 	if (UI_MENU_C.Succeeded())
 	{
 		MenuWidgetClass = UI_MENU_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UABGameplayResultWidget> UI_RESULT_C(TEXT("/Game/Book/UI/UI_Result.UI_Result_C"));
+	if (UI_RESULT_C.Succeeded())
+	{
+		ResultWidgetClass = UI_RESULT_C.Class;
 	}
 }
 
@@ -44,10 +51,19 @@ void AABPlayerController::BeginPlay()
 	ABCHECK(nullptr != HUDWidget);
 	HUDWidget->AddToViewport(1);
 
+	ResultWidget = CreateWidget<UABGameplayResultWidget>(this, ResultWidgetClass);
+	ABCHECK(nullptr != ResultWidget);
+
 	ABPlayerState = Cast<AABPlayerState>(PlayerState);
 	ABCHECK(nullptr != ABPlayerState);
 	HUDWidget->BindPlayerState(ABPlayerState);
 	ABPlayerState->OnPlayerStateChanged.Broadcast();
+}
+
+void AABPlayerController::ShowResultUI()
+{
+	ResultWidget->AddToViewport();
+	ChangeInputMode(false);
 }
 
 void AABPlayerController::ChangeInputMode(bool bGameMode)
