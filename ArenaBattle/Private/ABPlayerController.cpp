@@ -6,6 +6,7 @@
 #include "ABCharacter.h"
 #include "ABGameplayWidget.h"
 #include "ABGameplayResultWidget.h"
+#include "ABGameState.h"
 
 AABPlayerController::AABPlayerController()
 {
@@ -62,6 +63,10 @@ void AABPlayerController::BeginPlay()
 
 void AABPlayerController::ShowResultUI()
 {
+	auto ABGameState = Cast<AABGameState>(UGameplayStatics::GetGameState(this));
+	ABCHECK(nullptr != ABGameState);
+	ResultWidget->BindGameState(ABGameState);
+
 	ResultWidget->AddToViewport();
 	ChangeInputMode(false);
 }

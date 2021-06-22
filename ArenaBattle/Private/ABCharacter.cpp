@@ -629,7 +629,7 @@ void AABCharacter::SetCharacterState(ECharacterState NewState)
 		
 			if (bIsPlayer)
 			{
-				ABPlayerController->RestartLevel();
+				ABPlayerController->ShowResultUI();
 			}
 			else
 			{
